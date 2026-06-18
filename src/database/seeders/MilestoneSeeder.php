@@ -64,8 +64,8 @@ class MilestoneSeeder extends Seeder
                         'description' => 'pushするたびにテストが自動で走る仕組みを作りました。'],
                     ['title' => '応用編：コード品質チェック', 'subtitle' => '静的解析・整形', 'icon' => '🛡️',
                         'description' => '品質ゲートでコードの健全性を自動的に守れるようになりました。'],
-                    ['title' => '実践編：自動デプロイ', 'subtitle' => 'GitHub Actions → AWS EC2', 'icon' => '🌐', 'is_final' => true,
-                        'description' => 'そして今——このページ自身が、あなたの組んだCI/CDパイプラインで自動デプロイされています。'],
+                    ['title' => '実践編：自動デプロイ', 'subtitle' => 'GitHub Actions → AWS EC2', 'icon' => '🌐', 'is_final' => true, 'completed' => false,
+                        'description' => 'さあ、最後の一歩。git push すれば、このページが GitHub から AWS EC2 へ自動でデプロイされ、講座はついに完成します。その瞬間を、自分の手で迎えにいこう。'],
                 ],
             ],
         ];
@@ -82,7 +82,7 @@ class MilestoneSeeder extends Seeder
                         'description' => $item['description'] ?? null,
                         'icon' => $item['icon'] ?? '✅',
                         'position' => $i + 1,
-                        'completed' => true,
+                        'completed' => $item['completed'] ?? true,
                         'is_final' => $item['is_final'] ?? false,
                     ]
                 );
