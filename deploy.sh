@@ -24,6 +24,8 @@ docker compose exec -T app sh -c 'grep -q "^APP_KEY=base64:" .env || php artisan
 # キャッシュとマイグレーション（Dockerコンテナ内で実行）
 echo "🔧 Running migrations and clearing cache..."
 docker compose exec -T app php artisan migrate --force
+# 学びの軌跡データを投入（MilestoneSeederはupdateOrCreateで冪等）
+docker compose exec -T app php artisan db:seed --force
 docker compose exec -T app php artisan config:cache
 docker compose exec -T app php artisan route:cache
 docker compose exec -T app php artisan view:cache
