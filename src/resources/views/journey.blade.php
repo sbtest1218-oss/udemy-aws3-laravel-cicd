@@ -56,20 +56,6 @@
             background: linear-gradient(180deg, rgba(109,94,252,.0), rgba(109,94,252,.7) 12%, rgba(236,79,170,.7) 88%, rgba(236,79,170,0));
         }
         .final-glow { box-shadow: 0 0 0 1px rgba(250,204,21,.5), 0 24px 60px -20px rgba(250,204,21,.45); }
-
-        /* 未完アイテム */
-        .check-pending {
-            width: 30px; height: 30px; flex: 0 0 auto; border-radius: 9999px;
-            display:grid; place-items:center; font-weight:900; color:#fde047;
-            border: 2px dashed rgba(250,204,21,.7); background: rgba(250,204,21,.08);
-        }
-        .pending-card { animation: glowpulse 2.4s ease-in-out infinite; }
-        @keyframes glowpulse {
-            0%,100%{ box-shadow: 0 0 0 1px rgba(250,204,21,.35), 0 18px 50px -24px rgba(250,204,21,.5); }
-            50%{ box-shadow: 0 0 0 1px rgba(250,204,21,.7), 0 22px 60px -18px rgba(250,204,21,.8); }
-        }
-        .pending-dot { animation: dotpulse 1.6s ease-in-out infinite; }
-        @keyframes dotpulse { 0%,100%{ transform:scale(1); opacity:1; } 50%{ transform:scale(1.5); opacity:.6; } }
         .shine { background-size:200% auto; -webkit-background-clip:text; background-clip:text; color:transparent;
             background-image: linear-gradient(100deg,#fff 10%,#a5b4fc 30%,#f0abfc 55%,#fff 80%);
             animation: shine 6s linear infinite; }
@@ -85,7 +71,7 @@
         {{-- ===== ヒーロー ===== --}}
         <section class="min-h-screen flex flex-col items-center justify-center text-center px-6 py-20">
             <div class="badge-pop glass inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm text-indigo-200 mb-8">
-                🎓 スクラム開発（完全版）— ラスト1章
+                🎓 スクラム開発（完全版）— 修了
             </div>
 
             <h1 class="display font-black leading-tight text-4xl sm:text-6xl md:text-7xl mb-6">
@@ -128,8 +114,8 @@
                     <div class="text-indigo-200/70">フェーズ</div>
                 </div>
                 <div class="glass rounded-2xl px-5 py-3">
-                    <div class="display font-black text-2xl text-yellow-300">{{ $total - $completed }}</div>
-                    <div class="text-indigo-200/70">残りの章</div>
+                    <div class="display font-black text-2xl text-pink-300">100%</div>
+                    <div class="text-indigo-200/70">やりきった</div>
                 </div>
             </div>
 
@@ -149,32 +135,26 @@
 
                     @foreach ($phase['items'] as $item)
                         <div class="reveal relative mb-4">
-                            <div class="absolute -left-[26px] top-5 w-3 h-3 rounded-full ring-4 ring-[#070b1f]
-                                {{ $item->completed ? 'bg-indigo-300' : 'bg-yellow-300 pending-dot' }}"></div>
+                            <div class="absolute -left-[26px] top-5 w-3 h-3 rounded-full
+                                {{ $item->is_final ? 'bg-yellow-300' : 'bg-indigo-300' }} ring-4 ring-[#070b1f]"></div>
 
                             <div class="glass rounded-2xl p-5 flex items-start gap-4 transition
                                 hover:-translate-y-0.5 hover:bg-white/[.07]
-                                {{ $item->completed ? '' : 'pending-card border-yellow-300/50' }}">
-
-                                @if ($item->completed)
-                                    <div class="check">✓</div>
-                                @else
-                                    <div class="check-pending">…</div>
-                                @endif
-
+                                {{ $item->is_final ? 'final-glow border-yellow-300/40' : '' }}">
+                                <div class="check {{ $item->is_final ? '' : '' }}">✓</div>
                                 <div class="min-w-0">
                                     <div class="flex flex-wrap items-center gap-2">
                                         <span class="text-xl">{{ $item->icon }}</span>
-                                        <h3 class="font-bold text-lg leading-snug {{ $item->completed ? '' : 'text-yellow-100' }}">{{ $item->title }}</h3>
+                                        <h3 class="font-bold text-lg leading-snug">{{ $item->title }}</h3>
                                         @if ($item->subtitle)
                                             <span class="text-xs glass rounded-full px-2.5 py-0.5 text-indigo-100/80">{{ $item->subtitle }}</span>
                                         @endif
-                                        @unless ($item->completed)
-                                            <span class="text-xs font-bold rounded-full px-2.5 py-0.5 bg-yellow-300 text-yellow-950">▶ これから挑戦！</span>
-                                        @endunless
+                                        @if ($item->is_final)
+                                            <span class="text-xs font-bold rounded-full px-2.5 py-0.5 bg-yellow-300 text-yellow-950">今ここで完成！</span>
+                                        @endif
                                     </div>
                                     @if ($item->description)
-                                        <p class="text-sm {{ $item->completed ? 'text-indigo-100/70' : 'text-yellow-100/90' }} mt-2 leading-relaxed">{{ $item->description }}</p>
+                                        <p class="text-sm text-indigo-100/70 mt-2 leading-relaxed">{{ $item->description }}</p>
                                     @endif
                                 </div>
                             </div>
@@ -183,19 +163,25 @@
                 </div>
             @endforeach
 
-            {{-- ===== 締めのメッセージ（最後の一歩・祝福はまだ出さない） ===== --}}
+            {{-- ===== 締めのメッセージ ===== --}}
             <div class="reveal glass rounded-3xl p-8 sm:p-12 mt-16 text-center final-glow">
-                <div class="text-5xl mb-4">🚩</div>
-                <h2 class="display font-black text-2xl sm:text-4xl mb-4 shine">ゴールは、目の前。</h2>
+                <div class="text-5xl mb-4">🎉</div>
+                <h2 class="display font-black text-2xl sm:text-4xl mb-4 shine">全章クリア、おめでとう！</h2>
                 <p class="text-indigo-100/80 leading-relaxed max-w-xl mx-auto">
-                    環境構築から、TDD、AIコーディングまで——<br>
-                    あなたはここまで、本当によく駆け抜けてきました。<br><br>
+                    テストで品質を守り、AIを相棒にし、そして自動でデプロイする。<br>
+                    これだけのことを、あなたはやり遂げました。<br><br>
                     <span class="text-indigo-100/95">
-                        残すは最後のひとつ、<span class="font-bold text-yellow-200">自動デプロイ</span>だけ。<br>
-                        その <span class="font-bold">git push</span> が、すべてをつなげる最後のピースです。
+                        ——そしてこのページ自体が、あなたの組み上げた
+                        <span class="font-bold text-yellow-200">CI/CDパイプライン</span>で
+                        GitHub から AWS EC2 へ<span class="font-bold">自動デプロイ</span>されています。
                     </span><br><br>
-                    <span class="display font-black text-lg">さあ、自分の手で完成させにいこう。</span>
+                    その一歩が、これからの開発者人生をきっと支えてくれます。<br>
+                    <span class="display font-black text-lg">本当に、おつかれさま。🌱</span>
                 </p>
+                <button onclick="celebrate()" class="mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold
+                    bg-gradient-to-r from-indigo-500 to-pink-500 hover:opacity-90 transition text-white shadow-lg">
+                    🎊 もう一度祝う
+                </button>
             </div>
 
             <footer class="text-center text-indigo-200/40 text-xs mt-16">
@@ -222,8 +208,7 @@
                 pct.textContent = cur + '%'; if (cur < PERCENT) requestAnimationFrame(step); };
             requestAnimationFrame(step);
 
-            // 全章完成（100%）のときだけ祝う。最後の一歩が残っている間は祝福しない。
-            if (PERCENT >= 100) setTimeout(celebrate, 600);
+            setTimeout(celebrate, 600);
         });
 
         // スクロールで出現
